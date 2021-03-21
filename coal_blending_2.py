@@ -115,30 +115,30 @@ status = m.optimize()
 df = pd.DataFrame({'Date': date_rng})
 df.set_index('Date', inplace=True)
 
-# df.loc[:, ['Coal_In_{}'.format(s) for s in supplier]] = [[coal_in[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
-df.loc[:, ['Coal_Remain_{}'.format(s) for s in supplier]] = [[coal_remain[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
-df.loc[:, ['Coal_Remain_Total']] = [coal_remain_total[d].x for d in range(len(date_rng))]
+df[['Coal_In_{}'.format(s) for s in supplier]] = [[coal_in[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
+df[['Coal_Remain_{}'.format(s) for s in supplier]] = [[coal_remain[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
+df['Coal_Remain_Total'] = [coal_remain_total[d].x for d in range(len(date_rng))]
 
-df.loc[:, ['CFB12_Ratio_{}'.format(s) for s in supplier]] = [[ratio_step * cfb12_ratio[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
-df.loc[:, ['CFB12_Ratio_Select']] = [cfb12_select_total[d].x for d in range(len(date_rng))]
-df.loc[:, ['CFB12_Blending_{}'.format(sp) for sp in spec_list[:-3]]] = [[cfb12_blending[sp][d].x for sp in range(len(spec_list[:-3]))] for d in range(len(date_rng))]
+df[['CFB12_Ratio_{}'.format(s) for s in supplier]] = [[ratio_step * cfb12_ratio[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
+df['CFB12_Ratio_Select'] = [cfb12_select_total[d].x for d in range(len(date_rng))]
+df[['CFB12_Blending_{}'.format(sp) for sp in spec_list[:-3]]] = [[cfb12_blending[sp][d].x for sp in range(len(spec_list[:-3]))] for d in range(len(date_rng))]
 cfb12_blending_B = [sum([cfb12_blending[spec_list.index(B)][d].x for B in ['Fe2O3', 'CaO', 'MgO', 'Na2O', 'K2O']]) for d in range(len(date_rng))]
 cfb12_blending_A = [sum([cfb12_blending[spec_list.index(A)][d].x for A in ['SiO2', 'Al2O3', 'TiO2']]) for d in range(len(date_rng))]
-df.loc[:, ['CFB12_Blending_B/A']] = [b / a for (b, a) in zip(cfb12_blending_B, cfb12_blending_A)]
-df.loc[:, ['CFB12_Blending_Slacking']] = df['CFB12_Blending_%S dry'] * df['CFB12_Blending_B/A']
-df.loc[:, ['CFB12_Blending_Fouling']] = df['CFB12_Blending_Na2O'] * df['CFB12_Blending_B/A']
+df['CFB12_Blending_B/A'] = [b / (a if a != 0 else 1) for (b, a) in zip(cfb12_blending_B, cfb12_blending_A)]
+df['CFB12_Blending_Slacking'] = df['CFB12_Blending_%S dry'] * df['CFB12_Blending_B/A']
+df['CFB12_Blending_Fouling'] = df['CFB12_Blending_Na2O'] * df['CFB12_Blending_B/A']
 
-df.loc[:, ['CFB3_Ratio_{}'.format(s) for s in supplier]] = [[ratio_step * cfb3_ratio[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
-df.loc[:, ['CFB3_Ratio_Select']] = [cfb3_select_total[d].x for d in range(len(date_rng))]
-df.loc[:, ['CFB3_Blending_{}'.format(sp) for sp in spec_list[:-3]]] = [[cfb3_blending[sp][d].x for sp in range(len(spec_list[:-3]))] for d in range(len(date_rng))]
+df[['CFB3_Ratio_{}'.format(s) for s in supplier]] = [[ratio_step * cfb3_ratio[d][s].x for s in range(len(supplier))] for d in range(len(date_rng))]
+df['CFB3_Ratio_Select'] = [cfb3_select_total[d].x for d in range(len(date_rng))]
+df[['CFB3_Blending_{}'.format(sp) for sp in spec_list[:-3]]] = [[cfb3_blending[sp][d].x for sp in range(len(spec_list[:-3]))] for d in range(len(date_rng))]
 cfb3_blending_B = [sum([cfb3_blending[spec_list.index(B)][d].x for B in ['Fe2O3', 'CaO', 'MgO', 'Na2O', 'K2O']]) for d in range(len(date_rng))]
 cfb3_blending_A = [sum([cfb3_blending[spec_list.index(A)][d].x for A in ['SiO2', 'Al2O3', 'TiO2']]) for d in range(len(date_rng))]
-df.loc[:, ['CFB3_Blending_B/A']] = [b / a for (b, a) in zip(cfb3_blending_B, cfb3_blending_A)]
-df.loc[:, ['CFB3_Blending_Slacking']] = df['CFB3_Blending_%S dry'] * df['CFB3_Blending_B/A']
-df.loc[:, ['CFB3_Blending_Fouling']] = df['CFB3_Blending_Na2O'] * df['CFB3_Blending_B/A']
+df['CFB3_Blending_B/A'] = [b / (a if a != 0 else 1) for (b, a) in zip(cfb3_blending_B, cfb3_blending_A)]
+df['CFB3_Blending_Slacking'] = df['CFB3_Blending_%S dry'] * df['CFB3_Blending_B/A']
+df['CFB3_Blending_Fouling'] = df['CFB3_Blending_Na2O'] * df['CFB3_Blending_B/A']
 
 df.columns = pd.MultiIndex.from_tuples([(col[:col.rfind('_')], col[col.rfind('_') + 1:]) for col in df.columns])
 
 df.fillna(0, inplace=True)
-# df = df.loc[:, (df != 0).any(axis=0)]   #hide zero columns
+df = df.loc[:, (df != 0).any(axis=0)]   #hide zero columns
 print(df)

@@ -8,6 +8,7 @@ date_rng = [d.strftime('%Y-%m-%d') for d in date_rng]
 
 # ___Initialize model___
 m = Model()
+m.options.SOLVER = 1
 
 # ______Constants_______
 ratio_step = 10
